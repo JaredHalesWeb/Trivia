@@ -14,6 +14,12 @@ import { TriviaComponent } from './pages/trivia/trivia.component';
 import { UserDataComponent } from './pages/user-data/user-data.component';
 import { HttpClientModule } from '@angular/common/http';
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // REQUIRED for Material animations
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -25,12 +31,20 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,  // <-- Required
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+  
+    // Angular Material modules
+    MatInputModule,
+    MatFormFieldModule,
+    MatCardModule,
+    MatButtonModule,
+    MatProgressSpinnerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

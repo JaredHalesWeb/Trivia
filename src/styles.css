@@ -1,4 +1,70 @@
-/* You can add global styles to this file, and also import other style files */
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* GLOBAL RESET AND BASE STYLES */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    background-color: #1e0033; /* Deep purple background */
+    color: #e0d3f7;            /* Light lavender text */
+  }
+  
+  /* IMPROVE BUTTONS AND INPUTS VISIBILITY IN DARK THEME */
+  input, button, textarea, select {
+    font-family: inherit;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #3a0066;
+    border: 1px solid #5e2b91;
+    border-radius: 4px;
+    padding: 0.5rem;
+    box-sizing: border-box;
+  }
+  
+  input::placeholder,
+  textarea::placeholder {
+    color: #bbb;
+  }
+  
+  button {
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #5e2b91;
+  }
+  
+  /* MATERIAL OVERRIDES (OPTIONAL TWEAKS) */
+  .mat-form-field-infix {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .mat-card {
+    background-color: #2a0052;
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* TYPOGRAPHY UTILITY CLASSES */
+  .text-center {
+    text-align: center;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  /* PAGE BACKGROUND STYLES */
+  body.dark-theme {
+    background: linear-gradient(135deg, #2b1055, #753a88);
+  }
+  
+  /* CONTAINER LAYOUT HELPERS */
+  .centered-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+  

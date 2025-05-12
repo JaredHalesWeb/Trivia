@@ -1,66 +1,64 @@
-.auth-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  form div {
-    margin-bottom: 15px;
-  }
-  
-  label {
-    font-weight: bold;
-  }
-  
-  input {
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-  }
-  
-  button {
-    padding: 10px;
-    font-size: 1rem;
-    color: white;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  p {
-    margin-top: 10px;
-  }
-  
-  a {
-    color: #007bff;
-    cursor: pointer;
-  }
-  
-  a:hover {
-    text-decoration: underline;
-  }
-  .error {
-    color: red;
-    margin-top: 10px;
-  }
-  
-  .success {
-    color: green;
-    margin-top: 10px;
-  }
-  
-  
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2b1055, #753a88); /* dark → light purple */
+  padding: 1rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  background-color: #2a0052;
+  color: #ffffff;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1.2rem;
+}
+
+.toggle {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #c5b3f0;
+}
+
+.toggle a {
+  color: #ffffff;
+  font-weight: bold;
+  margin-left: 4px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.toggle a:hover {
+  opacity: 0.8;
+}
+
+.status-messages {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.error {
+  color: #ff6f61;
+  margin-top: 0.5rem;
+}
+
+.success {
+  color: #90ee90;
+  margin-top: 0.5rem;
+}
