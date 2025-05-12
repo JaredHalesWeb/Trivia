@@ -22,7 +22,9 @@ export class SetupComponent implements OnInit {
     selectedUsers: [],
   };
 
-  constructor(private http: HttpClient, private firestore: AngularFirestore, private router: Router, private ngZone: NgZone) {}
+  constructor(private http: HttpClient, private firestore: AngularFirestore, private router: Router, private ngZone: NgZone) {this.firestore.firestore.settings({ ignoreUndefinedProperties: true });
+  console.log('Firestore settings applied');
+}
 
   ngOnInit(): void {
     this.fetchCategories();
@@ -35,21 +37,23 @@ export class SetupComponent implements OnInit {
     });
   }
 
-  fetchUsers(): void {
-  this.ngZone.run(() => {
-    this.firestore
-      .collection('users')
-      .valueChanges({ idField: 'id' })
-      .subscribe(
-        (users: any[]) => {
+fetchUsers(): void {
+  this.firestore
+    .collection('users')
+    .valueChanges({ idField: 'id' })
+    .subscribe({
+      next: (users: any[]) => {
+        this.ngZone.run(() => {
           this.users = users;
-        },
-        (error) => {
-          console.error('Error fetching users:', error);
-        }
-      );
-  });
+        });
+      },
+      error: (error) => {
+        console.error('Error fetching users:', error);
+      },
+    });
 }
+
+
 
   onPlayerChange(): void {
     if (this.formData.players === 1) {
