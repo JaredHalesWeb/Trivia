@@ -35,15 +35,18 @@ export class SetupComponent implements OnInit {
   }
 
   fetchUsers(): void {
-    this.firestore.collection('users').valueChanges({ idField: 'id' }).subscribe(
-      (users: any[]) => {
-        this.users = users;
+    this.firestore.collection('users').snapshotChanges().subscribe({
+      next: (snapshot) => {
+        this.users = snapshot.map(doc => ({
+          id: doc.payload.doc.id,
+          ...(doc.payload.doc.data() as Record<string, any>)
+        }));
       },
-      (error) => {
-        console.error('Error fetching users:', error);
+      error: (err) => {
+        console.error('Error fetching users:', err);
         alert('Failed to load users.');
       }
-    );
+    });      
   }
 
   onPlayerChange(): void {
