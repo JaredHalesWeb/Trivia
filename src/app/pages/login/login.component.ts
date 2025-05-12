@@ -20,6 +20,17 @@ export class LoginComponent {
 
   constructor(private afAuth: AngularFireAuth, private router: Router) {}
 
+  private formatFirebaseError(message: string): string {
+    // Remove the "Firebase: " prefix
+    let cleaned = message.replace(/^Firebase:\s*/, '');
+  
+    // Remove trailing error code in parentheses like (auth/xxx)
+    cleaned = cleaned.replace(/\s*\(auth\/[^\)]+\)\.?$/, '');
+  
+    // Trim any leftover whitespace or period
+    return cleaned.trim().replace(/\.$/, '');
+  }  
+
   toggleForm(): void {
     this.isLogin = !this.isLogin;
   }
@@ -37,10 +48,10 @@ export class LoginComponent {
         console.log('Logged in:', user);
         this.router.navigate(['/setup']);
       })
-      .catch((error) => {
-        this.errorMessage = error.message;
+      .catch(error => {
         console.error('Login error:', error);
-      })
+        this.errorMessage = this.formatFirebaseError(error.message);
+      })      
       .finally(() => {
         this.isLoading = false; // Hide loading state
       });
@@ -73,20 +84,16 @@ export class LoginComponent {
       }
     })
     .then(() => {
-      console.log('User data saved to Firestore');
-      return this.afAuth.signInWithEmailAndPassword(email, password); // Log them in
-    })
-    .then(() => {
-      console.log('Logged in after signup');
-      this.router.navigate(['/setup']); // Redirect to the setup page
-    })
-    .catch((error) => {
-      this.errorMessage = error.message;
-      console.error('Signup error:', error);
-    })
-    .finally(() => {
-      this.isLoading = false; // Hide loading state
-    });
+      this.successMessage = 'Account created and logged in!';
+        this.router.navigate(['/setup']);
+      })
+      .catch(error => {
+        console.error('Signup error:', error);
+        this.errorMessage = this.formatFirebaseError(error.message);
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
 }
 
 
