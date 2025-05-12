@@ -48,17 +48,47 @@ export class LoginComponent {
   }
 
   signup(email: string, password: string): void {
-    this.afAuth.createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        console.log('Account created successfully');
-        return this.afAuth.signInWithEmailAndPassword(email, password); // Log them in
-      })
-      .then(() => {
-        console.log('Logged in after signup');
-        this.router.navigate(['/setup']); // Redirect to the setup page
-      })
-      .catch(error => console.error('Signup error:', error));
-  }
+  this.isLoading = true; // Show loading state
+  this.errorMessage = '';
+  this.successMessage = '';
+
+  this.afAuth
+    .createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      console.log('Account created successfully');
+      const user = userCredential.user;
+
+      if (user) {
+        // Add user data to Firestore
+        const userData = {
+          userId: user.uid,
+          email: user.email,
+          name: '', // Optional: Add a field for the user's name if you want
+          createdAt: new Date(),
+        };
+
+        return firebase.firestore().collection('users').doc(user.uid).set(userData);
+      } else {
+        throw new Error('User creation failed');
+      }
+    })
+    .then(() => {
+      console.log('User data saved to Firestore');
+      return this.afAuth.signInWithEmailAndPassword(email, password); // Log them in
+    })
+    .then(() => {
+      console.log('Logged in after signup');
+      this.router.navigate(['/setup']); // Redirect to the setup page
+    })
+    .catch((error) => {
+      this.errorMessage = error.message;
+      console.error('Signup error:', error);
+    })
+    .finally(() => {
+      this.isLoading = false; // Hide loading state
+    });
+}
+
 
   toggleAuthMode(event: Event): void {
     event.preventDefault(); // Prevents the default behavior of the link

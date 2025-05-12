@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-setup',
@@ -21,7 +22,7 @@ export class SetupComponent implements OnInit {
     selectedUsers: [],
   };
 
-  constructor(private http: HttpClient, private firestore: AngularFirestore, private router: Router) {}
+  constructor(private http: HttpClient, private firestore: AngularFirestore, private router: Router, private ngZone: NgZone) {}
 
   ngOnInit(): void {
     this.fetchCategories();
@@ -35,16 +36,20 @@ export class SetupComponent implements OnInit {
   }
 
   fetchUsers(): void {
-    this.firestore.collection('users').valueChanges({ idField: 'id' }).subscribe(
-      (users: any[]) => {
-        this.users = users;
-      },
-      (error) => {
-        console.error('Error fetching users:', error);
-        alert('Failed to load users.');
-      }
-    );
-  }
+  this.ngZone.run(() => {
+    this.firestore
+      .collection('users')
+      .valueChanges({ idField: 'id' })
+      .subscribe(
+        (users: any[]) => {
+          this.users = users;
+        },
+        (error) => {
+          console.error('Error fetching users:', error);
+        }
+      );
+  });
+}
 
   onPlayerChange(): void {
     if (this.formData.players === 1) {

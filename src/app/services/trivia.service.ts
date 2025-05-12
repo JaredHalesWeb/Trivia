@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TriviaService {
-  private baseUrl = 'https://opentdb.com/api_category.php';
+  private baseUrl = 'https://opentdb.com/api.php';
 
   constructor(private http: HttpClient) {}
 
