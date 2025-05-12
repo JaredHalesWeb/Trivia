@@ -1,23 +1,72 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Component, OnInit } from '@angular/core';
+import { TriviaService } from '../../services/trivia.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-trivia',
-  standalone: false,
+  standalone:false,
   templateUrl: './trivia.component.html',
-  styleUrl: './trivia.component.css'
+  styleUrls: ['./trivia.component.css']
 })
-export class TriviaComponent {
-  private apiUrl = 'https://opentdb.com/api.php?amount=10&type=multiple';
+export class TriviaComponent implements OnInit {
+  questions: any[] = [];
+  currentQuestionIndex: number = 0;
+  score: number = 0;
+  isLoading: boolean = true;
+  gameData: any;
 
-  constructor(private http: HttpClient, private firestore: AngularFirestore) {}
+  constructor(
+    private triviaService: TriviaService,
+    private router: Router
+  ) {}
 
-  getQuestions() {
-    return this.http.get(this.apiUrl);
+  ngOnInit(): void {
+    const navigation = this.router.getCurrentNavigation();
+    this.gameData = navigation?.extras.state?.['gameData'] || {};
+
+    if (!this.gameData || Object.keys(this.gameData).length === 0) {
+      alert('Game data is missing. Redirecting to setup...');
+      this.router.navigate(['/setup']);
+      return;
+    }
+
+    this.loadQuestions();
   }
 
-saveScore(userId: string, score: number) {
-  this.firestore.collection('scores').doc(userId).set({ score });
-}
+  loadQuestions(): void {
+    const { questions, category, difficulty, type } = this.gameData;
+    this.triviaService.fetchQuestions(questions, category, difficulty, type).subscribe(
+      (response: any) => {
+        this.questions = response.results.map((q: any) => ({
+          question: q.question,
+          options: [...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5),
+          correctAnswer: q.correct_answer
+        }));
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error fetching questions:', error);
+        this.isLoading = false;
+      }
+    );
+  }
+
+  checkAnswer(option: string): void {
+    if (option === this.questions[this.currentQuestionIndex].correctAnswer) {
+      this.score++;
+      alert('Correct!');
+    } else {
+      alert('Wrong!');
+    }
+    this.nextQuestion();
+  }
+
+  nextQuestion(): void {
+    if (this.currentQuestionIndex < this.questions.length - 1) {
+      this.currentQuestionIndex++;
+    } else {
+      alert(`Game Over! Your final score is ${this.score}.`);
+      this.router.navigate(['/setup']);
+    }
+  }
 }

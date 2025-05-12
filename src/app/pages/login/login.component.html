@@ -1,21 +1,15 @@
-<div class="auth-container">
-    <h2>{{ isSignup ? 'Sign Up' : 'Login' }}</h2>
-    
-    <form (ngSubmit)="isSignup ? signup(email, password) : login(email, password)">
-      <div>
-        <label for="email">Email</label>
-        <input type="email" id="email" [(ngModel)]="email" name="email" required />
-      </div>
-      <div>
-        <label for="password">Password</label>
-        <input type="password" id="password" [(ngModel)]="password" name="password" required />
-      </div>
-      <button type="submit">{{ isSignup ? 'Sign Up' : 'Login' }}</button>
-    </form>
-  
-    <p>
-      {{ isSignup ? 'Already have an account?' : "Don't have an account?" }}
-      <a href="#" (click)="toggleAuthMode($event)">{{ isSignup ? 'Login' : 'Sign Up' }}</a>
-    </p>
-  </div>
-  
+<!-- Login Form -->
+<form *ngIf="isLogin" (ngSubmit)="login(email, password)">
+  <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required />
+  <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required />
+  <button type="submit">Login</button>
+  <p>Don't have an account? <button type="button" (click)="toggleForm()">Sign Up</button></p>
+</form>
+
+<!-- Signup Form -->
+<form *ngIf="!isLogin" (ngSubmit)="signup(email, password)">
+  <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required />
+  <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required />
+  <button type="submit">Sign Up</button>
+  <p>Already have an account? <button type="button" (click)="toggleForm()">Login</button></p>
+</form>

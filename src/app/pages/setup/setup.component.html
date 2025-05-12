@@ -1,21 +1,46 @@
 <div class="setup-container">
-    <h2>Set Up Trivia Game</h2>
-    <label>
-      Number of Players:
-      <input type="number" [(ngModel)]="numberOfPlayers" min="1" max="3" />
-    </label>
-    <label>
-      Number of Questions:
-      <input type="number" [(ngModel)]="numberOfQuestions" min="1" />
-    </label>
-    <label>
-      Difficulty:
-      <select [(ngModel)]="difficulty">
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
+  <h2>Game Setup</h2>
+  <form (ngSubmit)="createGame()">
+    <label for="players">Number of Players:</label>
+    <select id="players" [(ngModel)]="formData.players" name="players" (change)="onPlayerChange()" required>
+      <option *ngFor="let player of [1, 2, 3]" [value]="player">{{ player }}</option>
+    </select>
+
+    <label for="questions">Number of Questions:</label>
+    <input
+      type="number"
+      id="questions"
+      [(ngModel)]="formData.questions"
+      name="questions"
+      min="1"
+      required
+    />
+
+    <label for="category">Category:</label>
+    <select id="category" [(ngModel)]="formData.category" name="category" required>
+      <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+    </select>
+
+    <label for="difficulty">Difficulty:</label>
+    <select id="difficulty" [(ngModel)]="formData.difficulty" name="difficulty" required>
+      <option *ngFor="let level of ['Easy', 'Medium', 'Hard']" [value]="level.toLowerCase()">
+        {{ level }}
+      </option>
+    </select>
+
+    <label for="type">Question Type:</label>
+    <select id="type" [(ngModel)]="formData.type" name="type" required>
+      <option value="multiple">Multiple Choice</option>
+      <option value="boolean">True/False</option>
+    </select>
+
+    <div *ngIf="formData.players > 1">
+      <label for="users">Select Users:</label>
+      <select id="users" [(ngModel)]="formData.selectedUsers" name="selectedUsers" multiple>
+        <option *ngFor="let user of users" [value]="user.id">{{ user.email }}</option>
       </select>
-    </label>
-    <button (click)="startGame()">Start Game</button>
-  </div>
-  
+    </div>
+
+    <button type="submit">Start Game</button>
+  </form>
+</div>

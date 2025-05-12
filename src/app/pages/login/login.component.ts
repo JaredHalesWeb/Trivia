@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -11,19 +12,51 @@ import firebase from 'firebase/compat/app';
 export class LoginComponent {
   email = '';
   password = '';
-  isSignup = false; // Flag to toggle between login and signup
+  isSignup = false;
+  isLoading = false; // Loading state
+  errorMessage = ''; // Error message
+  successMessage = ''; // Success message
+  isLogin: boolean = true;
 
-  constructor(private afAuth: AngularFireAuth) {}
+  constructor(private afAuth: AngularFireAuth, private router: Router) {}
+
+  toggleForm(): void {
+    this.isLogin = !this.isLogin;
+  }
 
   login(email: string, password: string): void {
     this.afAuth.signInWithEmailAndPassword(email, password)
-      .then(user => console.log('Logged in:', user))
-      .catch(error => console.error('Login error:', error));
+      this.isLoading = true; // Show loading state
+      this.errorMessage = '';
+      this.successMessage = '';
+
+      this.afAuth
+      .signInWithEmailAndPassword(email, password)
+      .then((user) => {
+        this.successMessage = 'Successfully logged in!';
+        console.log('Logged in:', user);
+        this.router.navigate(['/setup']);
+      })
+      .catch((error) => {
+        this.errorMessage = error.message;
+        console.error('Login error:', error);
+      })
+      .finally(() => {
+        this.isLoading = false; // Hide loading state
+      });
+      
   }
 
   signup(email: string, password: string): void {
     this.afAuth.createUserWithEmailAndPassword(email, password)
-      .then(user => console.log('Signed up:', user))
+      .then(() => {
+        console.log('Account created successfully');
+        return this.afAuth.signInWithEmailAndPassword(email, password); // Log them in
+      })
+      .then(() => {
+        console.log('Logged in after signup');
+        this.router.navigate(['/setup']); // Redirect to the setup page
+      })
       .catch(error => console.error('Signup error:', error));
   }
 
