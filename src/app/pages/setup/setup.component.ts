@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injector, OnInit, inject, runInInjectionContext } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { NgZone } from '@angular/core';
+import { GameDataService } from '../../services/game-data-service.service';
 
 @Component({
   selector: 'app-setup',
@@ -22,7 +23,7 @@ export class SetupComponent implements OnInit {
     selectedUsers: [],
   };
 
-  constructor(private http: HttpClient, private firestore: AngularFirestore, private router: Router, private ngZone: NgZone) {this.firestore.firestore.settings({ ignoreUndefinedProperties: true });
+  constructor(private gameDataService: GameDataService, private http: HttpClient,private injector: Injector, private firestore: AngularFirestore, private router: Router, private ngZone: NgZone,) {this.firestore.firestore.settings({ ignoreUndefinedProperties: true });
   console.log('Firestore settings applied');
 }
 
@@ -38,20 +39,22 @@ export class SetupComponent implements OnInit {
   }
 
 fetchUsers(): void {
-  this.firestore
-    .collection('users')
-    .valueChanges({ idField: 'id' })
-    .subscribe({
-      next: (users: any[]) => {
-        this.ngZone.run(() => {
+  runInInjectionContext(this.injector, () => {
+    this.firestore
+      .collection('users')
+      .valueChanges({ idField: 'id' })
+      .subscribe({
+        next: (users: any[]) => {
+          console.log('Fetched users:', users);
           this.users = users;
-        });
-      },
-      error: (error) => {
-        console.error('Error fetching users:', error);
-      },
-    });
+        },
+        error: (error) => {
+          console.error('Error fetching users:', error);
+        },
+      });
+  });
 }
+
 
 
 
@@ -75,7 +78,10 @@ fetchUsers(): void {
       questionsPerPlayer: totalQuestions / players,
     };
 
-    // Navigate to the trivia page with the game setup as state
+    console.log('Navigating with gameData:', gameData);
+    this.gameDataService.setGameData(gameData);
+
     this.router.navigate(['/trivia'], { state: { gameData } });
   }
+  
 }

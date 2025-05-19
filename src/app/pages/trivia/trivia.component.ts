@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TriviaService } from '../../services/trivia.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { GameDataService } from '../../services/game-data-service.service';
 
 @Component({
   selector: 'app-trivia',
@@ -16,40 +17,51 @@ export class TriviaComponent implements OnInit {
   gameData: any;
 
   constructor(
+    private gameDataService: GameDataService,
     private triviaService: TriviaService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    const navigation = this.router.getCurrentNavigation();
-    this.gameData = navigation?.extras.state?.['gameData'] || {};
+  this.gameData = this.gameDataService.getGameData();
 
-    if (!this.gameData || Object.keys(this.gameData).length === 0) {
-      alert('Game data is missing. Redirecting to setup...');
-      this.router.navigate(['/setup']);
-      return;
-    }
+  console.log('Received gameData:', this.gameData); // Debug log
 
-    this.loadQuestions();
+  if (!this.gameData || Object.keys(this.gameData).length === 0) {
+    alert('Game data is missing. Redirecting to setup...');
+    this.router.navigate(['/setup']);
+    return;
   }
 
+  this.loadQuestions();
+}
+
   loadQuestions(): void {
-    const { questions, category, difficulty, type } = this.gameData;
-    this.triviaService.fetchQuestions(questions, category, difficulty, type).subscribe(
-      (response: any) => {
+  const { questions, category, difficulty, type } = this.gameData;
+  this.triviaService.fetchQuestions(questions, category, difficulty, type).subscribe(
+    (response: any) => {
+      console.log('API response:', response); // Debug log
+
+      if (response.results && response.results.length > 0) {
         this.questions = response.results.map((q: any) => ({
           question: q.question,
           options: [...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5),
-          correctAnswer: q.correct_answer
+          correctAnswer: q.correct_answer,
         }));
-        this.isLoading = false;
-      },
-      (error) => {
-        console.error('Error fetching questions:', error);
-        this.isLoading = false;
+      } else {
+        alert('No questions found for the selected settings.');
       }
-    );
-  }
+
+      this.isLoading = false;
+    },
+    (error) => {
+      console.error('Error fetching questions:', error);
+      alert('Failed to fetch questions. Please try again.');
+      this.isLoading = false;
+    }
+  );
+}
+
 
   checkAnswer(option: string): void {
     if (option === this.questions[this.currentQuestionIndex].correctAnswer) {

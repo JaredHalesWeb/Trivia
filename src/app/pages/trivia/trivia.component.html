@@ -1,20 +1,17 @@
-<div class="trivia-container" *ngIf="!isLoading; else loading">
-    <h2>Trivia Game</h2>
-    <p><strong>Score:</strong> {{ score }}</p>
-    <div *ngIf="questions.length > 0">
-      <h3 [innerHTML]="questions[currentQuestionIndex].question"></h3>
-      <div class="options">
-        <button
-          *ngFor="let option of questions[currentQuestionIndex].options"
-          (click)="checkAnswer(option)"
-        >
-          {{ option }}
-        </button>
-      </div>
-    </div>
+<div *ngIf="isLoading">
+  <p>Loading questions...</p>
+</div>
+
+<div *ngIf="!isLoading && questions.length > 0">
+  <div>
+    <h3>Question {{ currentQuestionIndex + 1 }}:</h3>
+    <p [innerHTML]="questions[currentQuestionIndex]?.question"></p>
   </div>
-  
-  <ng-template #loading>
-    <p>Loading questions...</p>
-  </ng-template>
-  
+  <div *ngFor="let option of questions[currentQuestionIndex]?.options">
+    <button (click)="checkAnswer(option)">{{ option }}</button>
+  </div>
+</div>
+
+<div *ngIf="!isLoading && questions.length === 0">
+  <p>No questions available. Please try again later.</p>
+</div>

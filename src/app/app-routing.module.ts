@@ -12,6 +12,7 @@ const routes: Routes = [
   { path: 'setup', component: SetupComponent, canActivate: [AuthGuard] },
   { path: 'trivia', component: TriviaComponent, canActivate: [AuthGuard] },
   { path: 'user-data', component: UserDataComponent, canActivate: [AuthGuard] },
+  { path: '**', redirectTo: 'setup' }
 ];
 
 @NgModule({
