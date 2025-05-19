@@ -1,15 +1,16 @@
 <div class="trivia-container" *ngIf="isLoading">
-  <p class="loading-text">Loading questions...</p>
+  <p>Loading questions...</p>
 </div>
 
 <div class="trivia-container" *ngIf="!isLoading && questions.length > 0">
   <div class="question-box">
-    <h3>Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}</h3>
-    <p [innerHTML]="questions[currentQuestionIndex]?.question"></p>
+    <h3>Now playing: {{ getCurrentPlayer().displayName || getCurrentPlayer().email }}</h3>
+    <h4>Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}</h4>
+    <p [innerHTML]="questions[currentQuestionIndex].question"></p>
 
     <div class="options">
       <button
-        *ngFor="let option of questions[currentQuestionIndex]?.options"
+        *ngFor="let option of questions[currentQuestionIndex].options"
         [disabled]="answered"
         [ngClass]="{
           'correct': answered && option === questions[currentQuestionIndex].correctAnswer,
@@ -21,16 +22,25 @@
       </button>
     </div>
 
-    <div class="feedback" *ngIf="answered">
+    <div *ngIf="answered" class="feedback">
       <p *ngIf="selectedAnswer === questions[currentQuestionIndex].correctAnswer" class="correct-text">✅ Correct!</p>
       <p *ngIf="selectedAnswer !== questions[currentQuestionIndex].correctAnswer" class="incorrect-text">
-        ❌ Wrong! The correct answer was <strong>{{ questions[currentQuestionIndex].correctAnswer }}</strong>
+        ❌ Wrong! Correct answer: <strong>{{ questions[currentQuestionIndex].correctAnswer }}</strong>
       </p>
-      <button class="next-btn" (click)="nextQuestion()">Next Question</button>
+      <button (click)="nextQuestion()">Next Question</button>
     </div>
+  </div>
+
+  <div class="scoreboard">
+    <h4>Scoreboard</h4>
+    <ul>
+      <li *ngFor="let player of players">
+        {{ player.displayName || player.email }}: {{ playerScores[player.uid] }} pts
+      </li>
+    </ul>
   </div>
 </div>
 
-<div class="trivia-container" *ngIf="!isLoading && questions.length === 0">
+<div *ngIf="!isLoading && questions.length === 0">
   <p>No questions available. Please try again later.</p>
 </div>

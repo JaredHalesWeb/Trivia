@@ -71,3 +71,9 @@ button.incorrect {
 .next-btn:hover {
   background-color: #fff000;
 }
+
+.scoreboard {
+  margin-top: 2rem;
+  border-top: 1px solid #888;
+  padding-top: 1rem;
+}

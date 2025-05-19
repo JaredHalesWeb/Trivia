@@ -72,10 +72,19 @@ export class LoginComponent {
         if (!user) throw new Error('User creation failed');
 
         const userData = {
-          userId: user.uid,
+          uid: user.uid,
           email: user.email,
-          name: '',
+          displayName: user.displayName || user.email,
           createdAt: new Date(),
+          stats: {
+            gamesPlayed: 0,
+            gamesWon: 0,
+            gamesLost: 0,
+            questionsCorrect: 0,
+            questionsIncorrect: 0,
+            categoryWins: {},     // e.g., { 'Science': 2 }
+            categoryLosses: {}    // e.g., { 'History': 3 }
+          }
         };
 
         return firebase.firestore().collection('users').doc(user.uid).set(userData);

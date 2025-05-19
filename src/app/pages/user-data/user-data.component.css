@@ -1,0 +1,38 @@
+.user-stats-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  background: #220033;
+  padding: 2rem;
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.progress-section {
+  margin-top: 1rem;
+}
+
+progress {
+  width: 100%;
+  height: 20px;
+  border-radius: 5px;
+  appearance: none;
+}
+
+progress::-webkit-progress-bar {
+  background-color: #ccc;
+  border-radius: 5px;
+}
+
+progress::-webkit-progress-value {
+  background-color: #00cc99;
+  border-radius: 5px;
+}
