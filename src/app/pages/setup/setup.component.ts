@@ -36,20 +36,20 @@ export class SetupComponent implements OnInit {
   }
 
   fetchUsers(): void {
-  this.ngZone.run(() => {
-    this.firestore
-      .collection('users')
-      .valueChanges({ idField: 'id' })
-      .subscribe(
-        (users: any[]) => {
-          this.users = users;
-        },
-        (error) => {
-          console.error('Error fetching users:', error);
-        }
-      );
-  });
-}
+    this.ngZone.run(() => {
+      this.firestore
+        .collection('users')
+        .valueChanges({ idField: 'id' })
+        .subscribe({
+          next: (users: any[]) => {
+            this.users = users;
+          },
+          error: (error) => {
+            console.error('Error fetching users:', error);
+          }
+        });
+    });
+  }  
 
   onPlayerChange(): void {
     if (this.formData.players === 1) {
