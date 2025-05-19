@@ -46,7 +46,7 @@ export class LoginComponent {
       .then((user) => {
         this.successMessage = 'Successfully logged in!';
         console.log('Logged in:', user);
-        this.router.navigate(['/setup']);
+        this.router.navigate(['/main-menu']);
       })
       .catch(error => {
         console.error('Login error:', error);
@@ -95,7 +95,7 @@ export class LoginComponent {
       })
       .then(() => {
         this.successMessage = 'Account created and logged in!';
-        this.router.navigate(['/setup']);
+        this.router.navigate(['/main-menu']);
       })
       .catch(error => {
         console.error('Signup error:', error);

@@ -20,7 +20,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MainMenuComponent } from './main-menu/main-menu.component';
+import { MainMenuComponent } from './pages/main-menu/main-menu.component';
 
 @NgModule({
   declarations: [
