@@ -79,6 +79,7 @@ export class TriviaComponent implements OnInit {
     } else {
       alert(`Game Over! Your final score is ${this.score}.`);
       this.router.navigate(['/setup']);
+      return;
     }
   }
 }
