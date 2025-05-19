@@ -1,13 +1,14 @@
-import { Component, Injector, OnInit, inject, runInInjectionContext } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { NgZone } from '@angular/core';
 import { GameDataService } from '../../services/game-data-service.service';
 
 @Component({
   selector: 'app-setup',
-  standalone:false,
+  standalone: false,
   templateUrl: './setup.component.html',
   styleUrls: ['./setup.component.css'],
 })
@@ -23,9 +24,17 @@ export class SetupComponent implements OnInit {
     selectedUsers: [],
   };
 
-  constructor(private gameDataService: GameDataService, private http: HttpClient,private injector: Injector, private firestore: AngularFirestore, private router: Router, private ngZone: NgZone,) {this.firestore.firestore.settings({ ignoreUndefinedProperties: true });
-  console.log('Firestore settings applied');
-}
+  constructor(
+    private afAuth: AngularFireAuth,
+    private gameDataService: GameDataService,
+    private http: HttpClient,
+    private firestore: AngularFirestore,
+    private router: Router,
+    private ngZone: NgZone
+  ) {
+    this.firestore.firestore.settings({ ignoreUndefinedProperties: true });
+    console.log('Firestore settings applied');
+  }
 
   ngOnInit(): void {
     this.fetchCategories();
@@ -38,8 +47,7 @@ export class SetupComponent implements OnInit {
     });
   }
 
-fetchUsers(): void {
-  runInInjectionContext(this.injector, () => {
+  fetchUsers(): void {
     this.firestore
       .collection('users')
       .valueChanges({ idField: 'id' })
@@ -52,11 +60,7 @@ fetchUsers(): void {
           console.error('Error fetching users:', error);
         },
       });
-  });
-}
-
-
-
+  }
 
   onPlayerChange(): void {
     if (this.formData.players === 1) {
@@ -64,7 +68,7 @@ fetchUsers(): void {
     }
   }
 
-  createGame(): void {
+  async createGame(): Promise<void> {
     const totalQuestions = this.formData.questions;
     const players = this.formData.players;
 
@@ -73,15 +77,35 @@ fetchUsers(): void {
       return;
     }
 
+    if (players > 1 && this.formData.selectedUsers.length !== players - 1) {
+      alert(`Please select ${players - 1} other player(s).`);
+      return;
+    }
+
+    // ✅ Get current Firebase user
+    const currentUser = await this.afAuth.currentUser;
+
+    if (!currentUser) {
+      alert('You must be logged in to start a game.');
+      return;
+    }
+
+    const currentUserData = {
+      uid: currentUser.uid,
+      email: currentUser.email,
+      displayName: currentUser.displayName || currentUser.email
+    };
+
+    const allPlayers = [currentUserData, ...this.formData.selectedUsers];
+
     const gameData = {
       ...this.formData,
       questionsPerPlayer: totalQuestions / players,
+      players: allPlayers
     };
 
     console.log('Navigating with gameData:', gameData);
     this.gameDataService.setGameData(gameData);
-
     this.router.navigate(['/trivia'], { state: { gameData } });
   }
-  
 }
