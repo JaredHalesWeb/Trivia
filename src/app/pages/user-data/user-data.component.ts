@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import firebase from 'firebase/compat/app';
 
 @Component({
   selector: 'app-user-data',
@@ -22,8 +23,8 @@ export class UserDataComponent implements OnInit {
     this.afAuth.authState.subscribe(user => {
       if (user) {
         this.firestore.collection('users').doc(user.uid).get().subscribe(doc => {
-          const data = doc.data();
-          if (data && data.stats) {
+          const data = doc.data() as any;
+          if (data?.stats) {
             this.stats = data.stats;
             this.bestCategory = this.getBestCategory(data.stats.categoryWins || {});
             this.worstCategory = this.getWorstCategory(data.stats.categoryLosses || {});

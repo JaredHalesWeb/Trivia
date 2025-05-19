@@ -1,23 +1,28 @@
-<div class="user-stats-container" *ngIf="!loading && stats">
-  <h2>Your Game Stats</h2>
-
-  <div class="stats-grid">
-    <div><strong>Games Played:</strong> {{ stats.gamesPlayed }}</div>
-    <div><strong>Games Won:</strong> {{ stats.gamesWon }}</div>
-    <div><strong>Games Lost:</strong> {{ stats.gamesLost }}</div>
-    <div><strong>Correct Answers:</strong> {{ stats.questionsCorrect }}</div>
-    <div><strong>Incorrect Answers:</strong> {{ stats.questionsIncorrect }}</div>
-    <div><strong>Accuracy:</strong> {{ getAccuracy() }}%</div>
-    <div><strong>Best Category:</strong> {{ bestCategory }}</div>
-    <div><strong>Worst Category:</strong> {{ worstCategory }}</div>
-  </div>
-
-  <div class="progress-section">
-    <label>Correct Answer Rate</label>
-    <progress max="100" [value]="getAccuracy()"></progress>
-  </div>
+<div *ngIf="loading" class="loading-container">
+  <mat-spinner diameter="40"></mat-spinner>
 </div>
 
-<div *ngIf="loading">
-  <p>Loading stats...</p>
+<div *ngIf="!loading && stats" class="mat-stats">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Your Game Stats</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <div class="stats-list">
+        <div><mat-icon>sports_esports</mat-icon> Games Played: {{ stats.gamesPlayed }}</div>
+        <div><mat-icon color="primary">emoji_events</mat-icon> Games Won: {{ stats.gamesWon }}</div>
+        <div><mat-icon color="warn">cancel</mat-icon> Games Lost: {{ stats.gamesLost }}</div>
+        <div><mat-icon>check_circle</mat-icon> Correct: {{ stats.questionsCorrect }}</div>
+        <div><mat-icon>highlight_off</mat-icon> Incorrect: {{ stats.questionsIncorrect }}</div>
+        <div>
+          <mat-icon>percent</mat-icon> Accuracy: {{ getAccuracy() }}%
+          <mat-progress-bar mode="determinate" [value]="getAccuracy()"></mat-progress-bar>
+        </div>
+        <div><mat-icon>thumb_up</mat-icon> Best Category: {{ bestCategory }}</div>
+        <div><mat-icon>thumb_down</mat-icon> Worst Category: {{ worstCategory }}</div>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
 </div>
