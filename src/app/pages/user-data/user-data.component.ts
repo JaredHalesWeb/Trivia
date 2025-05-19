@@ -3,8 +3,10 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
 
+
 @Component({
   selector: 'app-user-data',
+  standalone: false,
   templateUrl: './user-data.component.html',
   styleUrls: ['./user-data.component.css']
 })

@@ -21,6 +21,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MainMenuComponent } from './pages/main-menu/main-menu.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatIconModule } from '@angular/material/icon';
+
+
+
 
 @NgModule({
   declarations: [
@@ -41,12 +46,15 @@ import { MainMenuComponent } from './pages/main-menu/main-menu.component';
     FormsModule,
     HttpClientModule,
   
+  
     // Angular Material modules
     MatInputModule,
     MatFormFieldModule,
     MatCardModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]

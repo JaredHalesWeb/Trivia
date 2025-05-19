@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main-menu',
+  standalone: false,
   templateUrl: './main-menu.component.html',
   styleUrls: ['./main-menu.component.css']
 })
