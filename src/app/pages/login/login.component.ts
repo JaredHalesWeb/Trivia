@@ -59,32 +59,33 @@ export class LoginComponent {
   }
 
   signup(email: string, password: string): void {
-  this.isLoading = true; // Show loading state
-  this.errorMessage = '';
-  this.successMessage = '';
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
-  this.afAuth
-    .createUserWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      console.log('Account created successfully');
-      const user = userCredential.user;
+    this.afAuth
+      .createUserWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        console.log('Account created successfully');
+        const user = userCredential.user;
 
-      if (user) {
-        // Add user data to Firestore
+        if (!user) throw new Error('User creation failed');
+
         const userData = {
           userId: user.uid,
           email: user.email,
-          name: '', // Optional: Add a field for the user's name if you want
+          name: '',
           createdAt: new Date(),
         };
 
         return firebase.firestore().collection('users').doc(user.uid).set(userData);
-      } else {
-        throw new Error('User creation failed');
-      }
-    })
-    .then(() => {
-      this.successMessage = 'Account created and logged in!';
+      })
+      .then(() => {
+        // Now sign the user in again
+        return this.afAuth.signInWithEmailAndPassword(email, password);
+      })
+      .then(() => {
+        this.successMessage = 'Account created and logged in!';
         this.router.navigate(['/setup']);
       })
       .catch(error => {
@@ -94,19 +95,17 @@ export class LoginComponent {
       .finally(() => {
         this.isLoading = false;
       });
-}
-
+  }
 
   toggleAuthMode(event: Event): void {
     event.preventDefault(); // Prevents the default behavior of the link
     this.isSignup = !this.isSignup;
   }
-onLogin(email: string, password: string): void {
-  this.login(email, password);
-}
+  onLogin(email: string, password: string): void {
+    this.login(email, password);
+  }
 
-logout(): void {
-  this.afAuth.signOut().then(() => console.log('Logged out'));
-}
-
+  logout(): void {
+    this.afAuth.signOut().then(() => console.log('Logged out'));
+  }
 }

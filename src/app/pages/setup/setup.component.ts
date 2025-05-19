@@ -32,7 +32,7 @@ export class SetupComponent implements OnInit {
     private router: Router,
     private ngZone: NgZone
   ) {
-    this.firestore.firestore.settings({ ignoreUndefinedProperties: true });
+    // this.firestore.firestore.settings({ ignoreUndefinedProperties: true });
     console.log('Firestore settings applied');
   }
 
@@ -48,18 +48,21 @@ export class SetupComponent implements OnInit {
   }
 
   fetchUsers(): void {
+  this.afAuth.currentUser.then(currentUser => {
     this.firestore
       .collection('users')
       .valueChanges({ idField: 'id' })
       .subscribe({
         next: (users: any[]) => {
-          console.log('Fetched users:', users);
-          this.users = users;
+          // Remove the current user from the list so they don't select themselves
+          this.users = users.filter(user => user.uid !== currentUser?.uid);
+          console.log('Filtered users:', this.users);
         },
         error: (error) => {
           console.error('Error fetching users:', error);
         },
       });
+    });
   }
 
   onPlayerChange(): void {

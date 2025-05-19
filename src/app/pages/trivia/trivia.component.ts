@@ -13,6 +13,8 @@ export class TriviaComponent implements OnInit {
   questions: any[] = [];
   currentQuestionIndex: number = 0;
   score: number = 0;
+  answered: boolean = false;
+  selectedAnswer: string | null = null;
   isLoading: boolean = true;
   gameData: any;
 
@@ -64,22 +66,23 @@ export class TriviaComponent implements OnInit {
 
 
   checkAnswer(option: string): void {
+    this.selectedAnswer = option;
+    this.answered = true;
+
     if (option === this.questions[this.currentQuestionIndex].correctAnswer) {
       this.score++;
-      alert('Correct!');
-    } else {
-      alert('Wrong!');
     }
-    this.nextQuestion();
   }
 
   nextQuestion(): void {
+    this.answered = false;
+    this.selectedAnswer = null;
+
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
     } else {
-      alert(`Game Over! Your final score is ${this.score}.`);
+      alert(`🎉 Game Over! Your final score is ${this.score}/${this.questions.length}.`);
       this.router.navigate(['/setup']);
-      return;
     }
   }
 }

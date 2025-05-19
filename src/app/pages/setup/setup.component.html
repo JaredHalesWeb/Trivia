@@ -1,8 +1,15 @@
 <div class="setup-container">
-  <h2>Game Setup</h2>
+  <h2>🎮 Trivia Game Setup</h2>
+
   <form (ngSubmit)="createGame()">
     <label for="players">Number of Players:</label>
-    <select id="players" [(ngModel)]="formData.players" name="players" (change)="onPlayerChange()" required>
+    <select
+      id="players"
+      [(ngModel)]="formData.players"
+      name="players"
+      (change)="onPlayerChange()"
+      required
+    >
       <option *ngFor="let player of [1, 2, 3]" [value]="player">{{ player }}</option>
     </select>
 
@@ -17,27 +24,51 @@
     />
 
     <label for="category">Category:</label>
-    <select id="category" [(ngModel)]="formData.category" name="category" required>
-      <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+    <select
+      id="category"
+      [(ngModel)]="formData.category"
+      name="category"
+      required
+    >
+      <option *ngFor="let category of categories" [value]="category.id">
+        {{ category.name }}
+      </option>
     </select>
 
     <label for="difficulty">Difficulty:</label>
-    <select id="difficulty" [(ngModel)]="formData.difficulty" name="difficulty" required>
+    <select
+      id="difficulty"
+      [(ngModel)]="formData.difficulty"
+      name="difficulty"
+      required
+    >
       <option *ngFor="let level of ['Easy', 'Medium', 'Hard']" [value]="level.toLowerCase()">
         {{ level }}
       </option>
     </select>
 
     <label for="type">Question Type:</label>
-    <select id="type" [(ngModel)]="formData.type" name="type" required>
+    <select
+      id="type"
+      [(ngModel)]="formData.type"
+      name="type"
+      required
+    >
       <option value="multiple">Multiple Choice</option>
-      <option value="boolean">True/False</option>
+      <option value="boolean">True / False</option>
     </select>
 
     <div *ngIf="formData.players > 1">
-      <label for="users">Select Users:</label>
-      <select id="users" [(ngModel)]="formData.selectedUsers" name="selectedUsers" multiple>
-        <option *ngFor="let user of users" [value]="user.id">{{ user.email }}</option>
+      <label for="users">Select Other Player(s):</label>
+      <select
+        id="users"
+        [(ngModel)]="formData.selectedUsers"
+        name="selectedUsers"
+        multiple
+      >
+        <option *ngFor="let user of users" [ngValue]="user">
+          {{ user.displayName || user.email }}
+        </option>
       </select>
     </div>
 
