@@ -23,6 +23,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MainMenuComponent } from './pages/main-menu/main-menu.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 
 
 
@@ -56,7 +59,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatProgressBarModule,
     MatIconModule
   ],
-  providers: [],
+  providers: [provideFirebaseApp(() => initializeApp(environment.firebase)), provideFirebaseApp(() => initializeApp({ projectId: "trivia-game-4f844", appId: "1:642612144303:web:4ee9d7e4e51c4a219ecc5a", storageBucket: "trivia-game-4f844.firebasestorage.app", apiKey: "AIzaSyAHlt-o5C9FlqgnkigUGkDI2qp5R4ZBGDw", authDomain: "trivia-game-4f844.firebaseapp.com", messagingSenderId: "642612144303", measurementId: "G-B994P5Z7K6" })), provideAuth(() => getAuth()), provideFirestore(() => getFirestore())],
   bootstrap: [AppComponent]
 })
 export class AppModule { 

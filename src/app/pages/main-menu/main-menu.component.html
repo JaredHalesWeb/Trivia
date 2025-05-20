@@ -1,6 +1,10 @@
 <div class="menu-container">
-  <h1>Trivia Game</h1>
-  <button mat-raised-button color="primary" routerLink="/setup">Start New Game</button>
-  <button mat-raised-button color="accent" routerLink="/user-data">View My Stats</button>
-  <button mat-stroked-button color="warn" (click)="logout()">Logout</button>
+  <div class="menu-card">
+    <h1>Trivia Game</h1>
+    <div class="button-group">
+      <button mat-raised-button color="primary" routerLink="/setup">Start New Game</button>
+      <button mat-raised-button color="accent" routerLink="/user-data">View My Stats</button>
+      <button mat-stroked-button color="warn" (click)="logout()">Logout</button>
+    </div>
+  </div>
 </div>
