@@ -60,17 +60,17 @@
     </select>
 
     <div *ngIf="formData.players > 1">
-      <label for="users">Select Other Player(s):</label>
-      <select
-        id="users"
-        [(ngModel)]="formData.selectedUsers"
-        name="selectedUsers"
-        multiple
-      >
-        <option *ngFor="let user of users" [ngValue]="user">
+      <label>Select Other Player(s):</label>
+      <div *ngFor="let user of users">
+        <label>
+          <input
+            type="checkbox"
+            [checked]="isUserSelected(user)"
+            (change)="onToggleUser($event, user)"
+          />
           {{ user.displayName || user.email }}
-        </option>
-      </select>
+        </label>
+      </div>
     </div>
 
     <button type="submit">Start Game</button>
