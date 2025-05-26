@@ -2,9 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { TriviaService } from '../../services/trivia.service';
 import { Router } from '@angular/router';
 import { GameDataService } from '../../services/game-data-service.service';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
+import { Injector } from '@angular/core';
+import { runInInjectionContext } from '@angular/core';
+
+interface User {
+  uid: string;
+  displayName?: string;
+  email?: string;
+}
 
 @Component({
   selector: 'app-trivia',
@@ -14,23 +22,24 @@ import firebase from 'firebase/compat/app';
 })
 export class TriviaComponent implements OnInit {
   questions: any[] = [];
-  currentQuestionIndex: number = 0;
-  answered: boolean = false;
+  currentQuestionIndex = 0;
+  answered = false;
   selectedAnswer: string | null = null;
-  isLoading: boolean = true;
+  isLoading = true;
 
   gameData: any;
-  players: any[] = [];
-  currentPlayerIndex: number = 0;
+  players: User[] = [];
   playerScores: { [uid: string]: number } = {};
   questionOwnership: string[] = [];
+  // firestore: any;
 
   constructor(
     private gameDataService: GameDataService,
     private triviaService: TriviaService,
     private router: Router,
+    private afAuth: AngularFireAuth,
     private firestore: AngularFirestore,
-    private afAuth: AngularFireAuth
+    private injector: Injector
   ) {}
 
   ngOnInit(): void {
@@ -58,7 +67,7 @@ export class TriviaComponent implements OnInit {
 
     this.triviaService.fetchQuestions(questions, category, difficulty, type).subscribe(
       (response: any) => {
-        if (response.results && response.results.length > 0) {
+        if (response.results?.length > 0) {
           let questionIndex = 0;
 
           this.players.forEach(player => {
@@ -93,7 +102,7 @@ export class TriviaComponent implements OnInit {
     );
   }
 
-  getCurrentPlayer() {
+  get currentPlayer(): User | undefined {
     const uid = this.questionOwnership[this.currentQuestionIndex];
     return this.players.find(p => p.uid === uid);
   }
@@ -103,8 +112,9 @@ export class TriviaComponent implements OnInit {
     this.answered = true;
 
     const currentUid = this.questionOwnership[this.currentQuestionIndex];
+    const correctAnswer = this.questions[this.currentQuestionIndex].correctAnswer;
 
-    if (option === this.questions[this.currentQuestionIndex].correctAnswer) {
+    if (option === correctAnswer) {
       this.playerScores[currentUid]++;
     }
   }
@@ -116,22 +126,31 @@ export class TriviaComponent implements OnInit {
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
     } else {
-      const maxScore = Math.max(...Object.values(this.playerScores));
+     const maxScore = Math.max(...Object.values(this.playerScores));
 
-      // Update stats for each player
-      for (const player of this.players) {
-        const uid = player.uid;
-        const score = this.playerScores[uid] || 0;
-        const didWin = score === maxScore;
-        const correctCount = score;
-        const incorrectCount = this.gameData.questionsPerPlayer - score;
+    // Gather promises
+    const updatePromises = this.players.map(player => {
+      const uid = player.uid;
+      const score = this.playerScores[uid] || 0;
+      const didWin = score === maxScore;
+      const correctCount = score;
+      const incorrectCount = this.gameData.questionsPerPlayer - score;
 
-        this.updateStatsForPlayer(uid, didWin, this.gameData.category, correctCount, incorrectCount);
-      }
+      return this.updateStatsForPlayer(uid, didWin, this.gameData.category, correctCount, incorrectCount);
+    });
 
-      const winner = this.getWinner();
-      alert(`🎉 Game Over!\n${winner}`);
-      this.router.navigate(['/setup']);
+    Promise.all(updatePromises)
+      .then(() => {
+        const winner = this.getWinner();
+        alert(`🎉 Game Over!\n${winner}`);
+        this.router.navigate(['/setup']);
+      })
+      .catch(error => {
+        console.error('Error updating stats:', error);
+        alert('Game over, but stats could not be saved.');
+        this.router.navigate(['/setup']);
+      });
+
     }
   }
 
@@ -152,23 +171,25 @@ export class TriviaComponent implements OnInit {
     category: string,
     correctCount: number,
     incorrectCount: number
-  ): void {
-    const userRef = this.firestore.collection('users').doc(playerUid);
+  ): Promise<void> {
+    return runInInjectionContext(this.injector, () => {
+      const userRef = this.firestore.collection('users').doc(playerUid);
 
-    const statUpdates: any = {
-      'stats.gamesPlayed': firebase.firestore.FieldValue.increment(1),
-      'stats.questionsCorrect': firebase.firestore.FieldValue.increment(correctCount),
-      'stats.questionsIncorrect': firebase.firestore.FieldValue.increment(incorrectCount)
-    };
+      const statUpdates: any = {
+        'stats.gamesPlayed': firebase.firestore.FieldValue.increment(1),
+        'stats.questionsCorrect': firebase.firestore.FieldValue.increment(correctCount),
+        'stats.questionsIncorrect': firebase.firestore.FieldValue.increment(incorrectCount)
+      };
 
-    if (didWin) {
-      statUpdates['stats.gamesWon'] = firebase.firestore.FieldValue.increment(1);
-      statUpdates[`stats.categoryWins.${category}`] = firebase.firestore.FieldValue.increment(1);
-    } else {
-      statUpdates['stats.gamesLost'] = firebase.firestore.FieldValue.increment(1);
-      statUpdates[`stats.categoryLosses.${category}`] = firebase.firestore.FieldValue.increment(1);
-    }
+      if (didWin) {
+        statUpdates['stats.gamesWon'] = firebase.firestore.FieldValue.increment(1);
+        statUpdates[`stats.categoryWins.${category}`] = firebase.firestore.FieldValue.increment(1);
+      } else {
+        statUpdates['stats.gamesLost'] = firebase.firestore.FieldValue.increment(1);
+        statUpdates[`stats.categoryLosses.${category}`] = firebase.firestore.FieldValue.increment(1);
+      }
 
-    userRef.set(statUpdates, { merge: true });
+      return userRef.set(statUpdates, { merge: true });
+    });
   }
 }

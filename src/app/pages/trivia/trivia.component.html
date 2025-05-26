@@ -2,12 +2,18 @@
   <p>Loading questions...</p>
 </div>
 
+<!-- Trivia gameplay -->
 <div class="trivia-container" *ngIf="!isLoading && questions.length > 0">
   <div class="question-box">
-    <h3>Now playing: {{ getCurrentPlayer().displayName || getCurrentPlayer().email }}</h3>
+    <!-- Current player display -->
+    <ng-container *ngIf="currentPlayer">
+      <h3>Now playing: {{ currentPlayer.displayName || currentPlayer.email }}</h3>
+    </ng-container>
+
     <h4>Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}</h4>
     <p [innerHTML]="questions[currentQuestionIndex].question"></p>
 
+    <!-- Answer options -->
     <div class="options">
       <button
         *ngFor="let option of questions[currentQuestionIndex].options"
@@ -22,15 +28,20 @@
       </button>
     </div>
 
+    <!-- Feedback after answering -->
     <div *ngIf="answered" class="feedback">
-      <p *ngIf="selectedAnswer === questions[currentQuestionIndex].correctAnswer" class="correct-text">✅ Correct!</p>
+      <p *ngIf="selectedAnswer === questions[currentQuestionIndex].correctAnswer" class="correct-text">
+        ✅ Correct!
+      </p>
       <p *ngIf="selectedAnswer !== questions[currentQuestionIndex].correctAnswer" class="incorrect-text">
-        ❌ Wrong! Correct answer: <strong>{{ questions[currentQuestionIndex].correctAnswer }}</strong>
+        ❌ Wrong! Correct answer:
+        <strong>{{ questions[currentQuestionIndex].correctAnswer }}</strong>
       </p>
       <button (click)="nextQuestion()">Next Question</button>
     </div>
   </div>
 
+  <!-- Scoreboard -->
   <div class="scoreboard">
     <h4>Scoreboard</h4>
     <ul>
@@ -41,6 +52,7 @@
   </div>
 </div>
 
+<!-- No questions fallback -->
 <div *ngIf="!isLoading && questions.length === 0">
   <p>No questions available. Please try again later.</p>
 </div>
