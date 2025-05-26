@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import firebase from 'firebase/compat/app';
-
+import { Injector } from '@angular/core';
+import { runInInjectionContext } from '@angular/core';
 
 @Component({
   selector: 'app-user-data',
@@ -18,24 +18,28 @@ export class UserDataComponent implements OnInit {
 
   constructor(
     private afAuth: AngularFireAuth,
-    private firestore: AngularFirestore
+    private firestore: AngularFirestore,
+    private injector: Injector
   ) {}
 
   ngOnInit(): void {
     this.afAuth.authState.subscribe(user => {
       if (user) {
-        this.firestore.collection('users').doc(user.uid).get().subscribe(doc => {
-          const data = doc.data() as any;
-          if (data?.stats) {
-            this.stats = data.stats;
-            this.bestCategory = this.getBestCategory(data.stats.categoryWins || {});
-            this.worstCategory = this.getWorstCategory(data.stats.categoryLosses || {});
-          }
-          this.loading = false;
+        runInInjectionContext(this.injector, () => {
+          this.firestore.collection('users').doc(user.uid).get().subscribe(doc => {
+            const data = doc.data() as any;
+            if (data?.stats) {
+              this.stats = data.stats;
+              this.bestCategory = this.getBestCategory(data.stats.categoryWins || {});
+              this.worstCategory = this.getWorstCategory(data.stats.categoryLosses || {});
+            }
+            this.loading = false;
+          });
         });
       }
     });
   }
+
 
   getBestCategory(wins: any): string {
     let max = -1;

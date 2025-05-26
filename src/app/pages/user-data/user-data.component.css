@@ -58,3 +58,7 @@ mat-progress-bar {
   justify-content: center;
   margin-top: 3rem;
 }
+
+mat-card {
+  background-color: #7326ff;
+}
