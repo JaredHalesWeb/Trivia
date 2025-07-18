@@ -166,30 +166,42 @@ export class TriviaComponent implements OnInit {
   }
 
   updateStatsForPlayer(
-    playerUid: string,
-    didWin: boolean,
-    category: string,
-    correctCount: number,
-    incorrectCount: number
-  ): Promise<void> {
-    return runInInjectionContext(this.injector, () => {
-      const userRef = this.firestore.collection('users').doc(playerUid);
+  playerUid: string,
+  didWin: boolean,
+  category: string,
+  correctCount: number,
+  incorrectCount: number
+): Promise<void> {
+  return runInInjectionContext(this.injector, () => {
+    const userRef = this.firestore.collection('users').doc(playerUid);
 
-      const statUpdates: any = {
-        'stats.gamesPlayed': firebase.firestore.FieldValue.increment(1),
-        'stats.questionsCorrect': firebase.firestore.FieldValue.increment(correctCount),
-        'stats.questionsIncorrect': firebase.firestore.FieldValue.increment(incorrectCount)
-      };
+    // Ensure category is not empty or invalid
+    const safeCategory = category && category.trim() ? category : "Unknown";
 
-      if (didWin) {
-        statUpdates['stats.gamesWon'] = firebase.firestore.FieldValue.increment(1);
-        statUpdates[`stats.categoryWins.${category}`] = firebase.firestore.FieldValue.increment(1);
-      } else {
-        statUpdates['stats.gamesLost'] = firebase.firestore.FieldValue.increment(1);
-        statUpdates[`stats.categoryLosses.${category}`] = firebase.firestore.FieldValue.increment(1);
-      }
+    const statUpdates: any = {
+  gamesPlayed: firebase.firestore.FieldValue.increment(1),
+  questionsCorrect: firebase.firestore.FieldValue.increment(correctCount),
+  questionsIncorrect: firebase.firestore.FieldValue.increment(incorrectCount),
+};
 
-      return userRef.set(statUpdates, { merge: true });
-    });
-  }
+if (didWin) {
+  statUpdates.gamesWon = firebase.firestore.FieldValue.increment(1);
+  statUpdates.categoryWins = {
+    [safeCategory]: firebase.firestore.FieldValue.increment(1),
+  };
+} else {
+  statUpdates.gamesLost = firebase.firestore.FieldValue.increment(1);
+  statUpdates.categoryLosses = {
+    [safeCategory]: firebase.firestore.FieldValue.increment(1),
+  };
+}
+
+return userRef.set(
+  { stats: statUpdates }, // 👈 NESTED UNDER "stats"
+  { merge: true }
+);
+
+  });
+}
+
 }

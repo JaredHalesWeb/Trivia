@@ -28,6 +28,7 @@ export class UserDataComponent implements OnInit {
         runInInjectionContext(this.injector, () => {
           this.firestore.collection('users').doc(user.uid).get().subscribe(doc => {
             const data = doc.data() as any;
+            console.log('User doc:', data);
             if (data?.stats) {
               this.stats = data.stats;
               this.bestCategory = this.getBestCategory(data.stats.categoryWins || {});
